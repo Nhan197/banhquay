@@ -4,144 +4,96 @@
   <meta charset="UTF-8">
   <title>Bánh Quay Giống WheelOfNames</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 60px;
-    }
-
-    #wheel-container {
-      position: relative;
-      width: 400px;
-      height: 400px;
-      margin: 0 auto;
-    }
-
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 60px; }
+    #wheel-container { position: relative; width: 400px; height: 400px; margin: 0 auto; }
     #wheel {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 6px solid #333;
-      transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
-      position: relative;
-      overflow: hidden;
+      width: 100%; height: 100%; border-radius: 50%; border: 6px solid #333;
+      position: relative; overflow: hidden;
     }
-
     .slice {
-      position: absolute;
-      width: 50%;
-      height: 50%;
-      top: 50%;
-      left: 50%;
-      transform-origin: 0 0;
-      box-sizing: border-box;
-      border: 1px solid #fff;
+      position: absolute; width: 50%; height: 50%;
+      top: 50%; left: 50%; transform-origin: 0 0;
+      box-sizing: border-box; border: 1px solid #fff;
     }
-
     .slice div {
-      position: absolute;
-      left: 0;
-      top: 10px;
-      width: 200px;
-      font-size: 16px;
-      transform-origin: 0 0;
+      position: absolute; left: 0; top: 10px;
+      width: 200px; font-size: 16px; transform-origin: 0 0;
     }
-
     #pointer {
-      width: 0;
-      height: 0;
+      width: 0; height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
       border-bottom: 30px solid red;
       position: absolute;
-      top: -30px;
-      left: 50%;
-      transform: translateX(-50%);
+      top: -30px; left: 50%; transform: translateX(-50%);
       z-index: 10;
     }
-
     #spin-button {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 5;
-      padding: 15px 30px;
-      font-size: 20px;
-      border: none;
-      border-radius: 50%;
-      background-color: orange;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); z-index: 5;
+      padding: 15px 30px; font-size: 20px;
+      border: none; border-radius: 50%;
+      background-color: orange; color: white;
+      cursor: pointer; font-weight: bold;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
-
-    #result {
-      font-size: 28px;
-      color: green;
-      margin-top: 40px;
-      font-weight: bold;
-    }
+    #result { font-size: 28px; color: green; margin-top: 40px; font-weight: bold; }
   </style>
 </head>
 <body>
-
   <h1>🎯 Bánh Quay May Mắn 🎯</h1>
   <div id="wheel-container">
     <div id="pointer"></div>
     <div id="wheel"></div>
     <button id="spin-button" onclick="spin()">QUAY</button>
   </div>
-
   <div id="result"></div>
 
   <script>
-    const names = ["Lan", "Hùng", "Mai", "Nam", "Linh", "An"]; // Danh sách
-    const winner = "Mai"; // 👈 Tên người cần trúng
+    const names = ["Lan","Hùng","Mai","Nam","Linh","An"];
+    const winner = "Mai";
 
     const wheel = document.getElementById("wheel");
     const sliceCount = names.length;
     const angle = 360 / sliceCount;
 
-    // Vẽ lát bánh
     names.forEach((name, i) => {
       const slice = document.createElement("div");
       slice.className = "slice";
       slice.style.transform = `rotate(${i * angle}deg) skewY(${90 - angle}deg)`;
-      slice.style.background = i % 2 === 0 ? "#ffcc66" : "#66ccff";
-
+      slice.style.background = i % 2 ? "#66ccff" : "#ffcc66";
       const text = document.createElement("div");
       text.innerText = name;
       text.style.transform = `skewY(${-(90 - angle)}deg) rotate(${angle / 2}deg)`;
-
       slice.appendChild(text);
       wheel.appendChild(slice);
     });
 
     let spinning = false;
+    let currentRotation = 0;
 
     function spin() {
       if (spinning) return;
       spinning = true;
+      document.getElementById("result").innerText = "";
 
       const targetIndex = names.indexOf(winner);
-      const offset = angle * targetIndex + angle / 2;
-      const fullRotations = 6 * 360;
-      const randomOffset = Math.random() * angle - angle / 2;
-      const finalAngle = fullRotations + (360 - offset) + randomOffset;
+      const offset = angle * targetIndex + angle/2;
+      const full = 360 * 6;
+      const randomOffset = Math.random() * angle - angle/2;
+      const finalAngle = full + (360 - offset) + randomOffset;
 
+      currentRotation = finalAngle % 360;
+      wheel.style.transition = 'transform 5s cubic-bezier(0.33,1,0.68,1)';
       wheel.style.transform = `rotate(${finalAngle}deg)`;
 
-setTimeout(() => {
-  document.getElementById("result").innerText = `${winner} là người trúng! 🎉`;
-  spinning = false;
-}, 5200);
-
-// Xoá kết quả cũ khi bắt đầu quay lại
-document.getElementById("result").innerText = "";
+      setTimeout(() => {
+        document.getElementById("result").innerText = `${winner} là người trúng! 🎉`;
+        wheel.style.transition = 'none';
+        wheel.style.transform = `rotate(${currentRotation}deg)`;
+        spinning = false;
+      }, 5200);
     }
   </script>
-
 </body>
 </html>
