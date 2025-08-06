@@ -133,10 +133,13 @@
 
       wheel.style.transform = `rotate(${finalAngle}deg)`;
 
-      setTimeout(() => {
-        document.getElementById("result").innerText = `${winner} là người trúng! 🎉`;
-        spinning = false;
-      }, 5200);
+setTimeout(() => {
+  document.getElementById("result").innerText = `${winner} là người trúng! 🎉`;
+  spinning = false;
+}, 5200);
+
+// Xoá kết quả cũ khi bắt đầu quay lại
+document.getElementById("result").innerText = "";
     }
   </script>
 
