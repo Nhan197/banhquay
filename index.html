@@ -1,99 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Bánh Quay Giống WheelOfNames</title>
+  <meta charset="UTF-8" />
+  <title>Tò mò cái lờ</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 60px; }
-    #wheel-container { position: relative; width: 400px; height: 400px; margin: 0 auto; }
-    #wheel {
-      width: 100%; height: 100%; border-radius: 50%; border: 6px solid #333;
-      position: relative; overflow: hidden;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    .slice {
-      position: absolute; width: 50%; height: 50%;
-      top: 50%; left: 50%; transform-origin: 0 0;
-      box-sizing: border-box; border: 1px solid #fff;
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
     }
-    .slice div {
-      position: absolute; left: 0; top: 10px;
-      width: 200px; font-size: 16px; transform-origin: 0 0;
+
+    #text1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      color: red;
+      font-weight: 800;
+      text-align: center;
+      opacity: 1;
+      transition: opacity 1s ease;
     }
-    #pointer {
-      width: 0; height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 30px solid red;
-      position: absolute;
-      top: -30px; left: 50%; transform: translateX(-50%);
-      z-index: 10;
+
+    #text1.fade-out {
+      opacity: 0;
     }
-    #spin-button {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%); z-index: 5;
-      padding: 15px 30px; font-size: 20px;
-      border: none; border-radius: 50%;
-      background-color: orange; color: white;
-      cursor: pointer; font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+    #text2 {
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 800;
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      white-space: pre-line;
     }
-    #result { font-size: 28px; color: green; margin-top: 40px; font-weight: bold; }
+
+    #text2.show {
+      animation: growIn 0.9s forwards;
+    }
+
+    .hand {
+      font-size: clamp(3rem, 5vw, 4rem);
+      /* hiệu ứng tay nhấp nhô hướng thẳng vào màn hình */
+      animation: poke 0.7s infinite alternate;
+    }
+
+    @keyframes growIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes poke {
+      0% {
+        transform: translateZ(0) translateY(0) scale(1);
+      }
+      100% {
+        transform: translateZ(30px) translateY(-6px) scale(1.05);
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>🎯 Bánh Quay May Mắn 🎯</h1>
-  <div id="wheel-container">
-    <div id="pointer"></div>
-    <div id="wheel"></div>
-    <button id="spin-button" onclick="spin()">QUAY</button>
+  <!-- Dòng chữ đầu tiên -->
+  <div id="text1">Tò mò cái lờ</div>
+
+  <!-- Dòng chữ thứ hai + icon bàn tay chỉ thẳng -->
+  <div id="text2">
+    <div>Đi học nhi liền cho tao</div>
+    <div class="hand">👆</div>
   </div>
-  <div id="result"></div>
 
   <script>
-    const names = ["Lan","Hùng","Mai","Nam","Linh","An"];
-    const winner = "Mai";
+    window.addEventListener("load", function () {
+      const text1 = document.getElementById("text1");
+      const text2 = document.getElementById("text2");
 
-    const wheel = document.getElementById("wheel");
-    const sliceCount = names.length;
-    const angle = 360 / sliceCount;
-
-    names.forEach((name, i) => {
-      const slice = document.createElement("div");
-      slice.className = "slice";
-      slice.style.transform = `rotate(${i * angle}deg) skewY(${90 - angle}deg)`;
-      slice.style.background = i % 2 ? "#66ccff" : "#ffcc66";
-      const text = document.createElement("div");
-      text.innerText = name;
-      text.style.transform = `skewY(${-(90 - angle)}deg) rotate(${angle / 2}deg)`;
-      slice.appendChild(text);
-      wheel.appendChild(slice);
-    });
-
-    let spinning = false;
-    let currentRotation = 0;
-
-    function spin() {
-      if (spinning) return;
-      spinning = true;
-      document.getElementById("result").innerText = "";
-
-      const targetIndex = names.indexOf(winner);
-      const offset = angle * targetIndex + angle/2;
-      const full = 360 * 6;
-      const randomOffset = Math.random() * angle - angle/2;
-      const finalAngle = full + (360 - offset) + randomOffset;
-
-      currentRotation = finalAngle % 360;
-      wheel.style.transition = 'transform 5s cubic-bezier(0.33,1,0.68,1)';
-      wheel.style.transform = `rotate(${finalAngle}deg)`;
-
+      // Sau 5 giây bắt đầu làm text1 tan biến
       setTimeout(() => {
-        document.getElementById("result").innerText = `${winner} là người trúng! 🎉`;
-        wheel.style.transition = 'none';
-        wheel.style.transform = `rotate(${currentRotation}deg)`;
-        spinning = false;
-      }, 5200);
-    }
+        text1.classList.add("fade-out");
+
+        // Sau khi tan (1s), ẩn hẳn text1 và cho text2 xuất hiện
+        setTimeout(() => {
+          text1.style.display = "none";
+          text2.classList.add("show");
+        }, 1000);
+      }, 5000);
+    });
   </script>
 </body>
 </html>
